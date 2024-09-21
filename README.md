@@ -26,6 +26,7 @@
 ### Optional Dependencies
 - [progressbar](https://github.com/qbcore-framework/progressbar)
 - [qtarget](https://github.com/overextended/qtarget/releases)
+- [ox_target](https://github.com/overextended/ox_target)
 
 
 ---
