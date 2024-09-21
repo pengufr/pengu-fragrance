@@ -20,10 +20,13 @@
 
 - [qb-core](https://github.com/qbcore-framework/qb-core)
 - [ox_lib](https://github.com/overextended/ox_lib)
-- [qtarget](https://github.com/overextended/qtarget/releases) or [qb-target](https://github.com/qbcore-framework/qb-target)
+- [qb-target](https://github.com/qbcore-framework/qb-target)
+- [qb-menu](https://github.com/qbcore-framework/qb-menu)
 
 ### Optional Dependencies
 - [progressbar](https://github.com/qbcore-framework/progressbar)
+- [qtarget](https://github.com/overextended/qtarget/releases)
+
 
 ---
 
