@@ -22,9 +22,9 @@
 - [ox_lib](https://github.com/overextended/ox_lib)
 - [qb-target](https://github.com/qbcore-framework/qb-target)
 - [qb-menu](https://github.com/qbcore-framework/qb-menu)
+- [progressbar](https://github.com/qbcore-framework/progressbar)
 
 ### Optional Dependencies
-- [progressbar](https://github.com/qbcore-framework/progressbar)
 - [qtarget](https://github.com/overextended/qtarget/releases)
 - [ox_target](https://github.com/overextended/ox_target)
 
