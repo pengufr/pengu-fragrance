@@ -1,12 +1,10 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local shopItems = Config.Shop[1].Items
 
--- Function to print debug messages
 local function DebugPrint(message)
     print("[DEBUG] " .. message)
 end
 
--- Function to show a progress bar based on the config
 local function showProgressBar(duration, label)
     if Config.ProgressBar == 'ox' then
         lib.progressBar({
@@ -22,7 +20,6 @@ local function showProgressBar(duration, label)
     end
 end
 
--- Create Blip for Fragrance Shop
 Citizen.CreateThread(function()
     DebugPrint("Starting Fragrance Shop blip creation.")
     local blip = AddBlipForCoord(Config.ShopBlip.coords)
@@ -38,7 +35,6 @@ Citizen.CreateThread(function()
     DebugPrint("Blip for Fragrance Shop created successfully.")
 end)
 
--- Function to create the NPC
 local function SetupNPC(npcModel, position)
     DebugPrint("Setting up NPC: " .. npcModel)
     RequestModel(GetHashKey(npcModel))
@@ -62,7 +58,6 @@ local function SetupNPC(npcModel, position)
     end
 end
 
--- Function to set up the targeting system
 local function SetupTargeting(npcPed)
     if exports[Config.Target] then
         local options = {
@@ -92,7 +87,6 @@ local function SetupTargeting(npcPed)
     end
 end
 
--- Create the Fragrance Shop NPC and set up targeting
 Citizen.CreateThread(function()
     DebugPrint("Creating Fragrance Shop NPC...")
     local npcPed = SetupNPC(Config.NPC.model, Config.NPC.coords)
@@ -104,7 +98,6 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Main menu options for the shop
 local mainMenuOptions = {
     {
         title = 'Fragrance Shop',
@@ -117,12 +110,10 @@ local mainMenuOptions = {
     },
 }
 
--- Register event to open the main fragrance shop
 RegisterNetEvent('pengu-fragrance:openShop', function()
     DebugPrint("Opening Fragrance Shop...")
-    showProgressBar(2000, 'Opening Shop...') -- Show progress bar for 2 seconds
+    showProgressBar(2000, 'Opening Shop...') 
 
-    -- Register the main context
     lib.registerContext({
         id = 'fragrance_shop',
         title = 'Fragrance Shop',
@@ -132,7 +123,6 @@ RegisterNetEvent('pengu-fragrance:openShop', function()
     lib.showContext('fragrance_shop')
 end)
 
--- Register event to open the buy fragrances menu
 RegisterNetEvent('pengu-fragrance:openBuyMenu', function()
     local buyMenuOptions = {}
 
@@ -151,55 +141,45 @@ RegisterNetEvent('pengu-fragrance:openBuyMenu', function()
 
     DebugPrint("Buy menu options prepared, attempting to show buy menu...")
 
-    -- Register the buy fragrances context
     lib.registerContext({
         id = 'buy_fragrances',
         title = 'Buy Fragrances',
         options = buyMenuOptions,
     })
 
-    -- Show the buy fragrances context
     lib.showContext('buy_fragrances')
     DebugPrint("Context shown: buy_fragrances")
 end)
 
--- Determine the inventory type from the config
-local inventoryType = Config.InventoryType -- Ensure this variable holds the inventory type
+local inventoryType = Config.InventoryType 
 
--- Handle item purchase
 RegisterNetEvent('pengu-fragrance:buyItem', function(item)
-    DebugPrint("Attempting to purchase " .. item.Name .. " for $" .. item.Price) -- Debug message
+    DebugPrint("Attempting to purchase " .. item.Name .. " for $" .. item.Price) 
     QBCore.Functions.Notify("Attempting to purchase " .. item.Name .. " for $" .. item.Price, "success", 3000)
     TriggerServerEvent('pengu-fragrance:purchaseItem', item)
 end)
 
--- Handle fragrance usage with animation and progress bar
 RegisterNetEvent('pengu-fragrance:useFragrance', function(itemName)
     local playerPed = PlayerPedId()
 
-    -- Show progress bar for using the fragrance
-    showProgressBar(3000, 'Using Fragrance...') -- Show for 3 seconds
+    showProgressBar(3000, 'Using Fragrance...') 
 
-    -- Trigger the spray animation
     TriggerEvent('pengu-fragrance:sprayAnimation', playerPed)
 
-    -- Notify the server about the fragrance use
-    DebugPrint("Using fragrance: " .. itemName) -- Debug message
-    handleInventoryAction("use", itemName) -- Call inventory handling function
+    DebugPrint("Using fragrance: " .. itemName) 
+    handleInventoryAction("use", itemName) 
 end)
 
--- Function to handle spray animation
 RegisterNetEvent('pengu-fragrance:sprayAnimation', function(playerPed)
-    DebugPrint("Starting spray animation") -- Debug message
+    DebugPrint("Starting spray animation")
     local sprayProp = CreateObject(GetHashKey('prop_spray'), GetEntityCoords(playerPed), true, true, true)
     AttachEntityToEntity(sprayProp, playerPed, GetPedBoneIndex(playerPed, 60309), 0.1, 0, 0, 0, 0, false, true, false, true, 1, true)
     TaskPlayAnim(playerPed, 'mp_common', 'givetake1_a', 3.0, -1.0, -1, 49, 0, false, false, false)
 
-    Wait(2000) -- Wait for the animation duration
+    Wait(2000) 
     DeleteEntity(sprayProp)
 end)
 
--- Notify nearby players of fragrance scent
 Citizen.CreateThread(function()
     while true do
         local playerPed = PlayerPedId()
@@ -212,23 +192,20 @@ Citizen.CreateThread(function()
             local distance = #(playerCoords - otherCoords)
 
             if distance < 5.0 and otherPlayer ~= PlayerId() then
-                DebugPrint("Notifying nearby player: " .. GetPlayerServerId(otherPlayer)) -- Debug message
+                DebugPrint("Notifying nearby player: " .. GetPlayerServerId(otherPlayer)) 
                 TriggerServerEvent('pengu-fragrance:notifyNearbyPlayer', GetPlayerServerId(otherPlayer))
             end
         end
-        Wait(5000) -- Check every 5 seconds
+        Wait(5000) 
     end
 end)
 
--- Event to show a notification for the nearby player
 RegisterNetEvent('pengu-fragrance:showFragranceNotification', function()
     QBCore.Functions.Notify("You smell a nice fragrance nearby!", "success", 5000)
 end)
 
--- Example item handling based on inventory type
 local function handleInventoryAction(action, itemName)
     if inventoryType == "qb" then
-        -- QB inventory logic
         local Player = QBCore.Functions.GetPlayer(PlayerId())
         if action == "use" then
             if Player.Functions.RemoveItem(itemName, 1) then
@@ -238,7 +215,6 @@ local function handleInventoryAction(action, itemName)
             end
         end
     elseif inventoryType == "ox" then
-        -- Ox inventory logic
         if action == "use" then
             if exports.ox_inventory:Search('count', itemName) > 0 then
                 exports.ox_inventory:RemoveItem(itemName, 1)
@@ -248,7 +224,6 @@ local function handleInventoryAction(action, itemName)
             end
         end
     elseif inventoryType == "ps" then
-        -- PS inventory logic
         if action == "use" then
             local hasItem = false
             for _, item in ipairs(PS_Inventory:GetInventory()) do
@@ -270,7 +245,6 @@ local function handleInventoryAction(action, itemName)
     end
 end
 
--- Draw 3D text at the shop location
 function DrawText3D(x, y, z, text)
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
     local px, py, pz = table.unpack(GetGameplayCamCoords())
